@@ -10,6 +10,9 @@
 .dotnet/
 .dotnet_home/
 
+# Local illustration drafts and previews
+/design/
+
 # Patch / merge leftovers
 *.orig
 *.rej
