@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.Generic;
 using System.Linq;
+using System.Globalization;
 
 namespace ExHyperV.Models
 {
@@ -35,6 +36,37 @@ namespace ExHyperV.Models
     /// <summary>聚合多个 Hyper-V 网络 WMI 类的网卡设置。</summary>
     public partial class VmNetworkAdapter : ObservableObject
     {
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(NetworkSpeedText))]
+        [NotifyPropertyChangedFor(nameof(SendSpeedText))]
+        private ulong _sendSpeedBps;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(NetworkSpeedText))]
+        [NotifyPropertyChangedFor(nameof(ReceiveSpeedText))]
+        private ulong _receiveSpeedBps;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(NetworkSpeedText))]
+        [NotifyPropertyChangedFor(nameof(SendSpeedText))]
+        [NotifyPropertyChangedFor(nameof(ReceiveSpeedText))]
+        private bool _hasNetworkSpeedSample;
+
+        public string SendSpeedText => FormatRate(HasNetworkSpeedSample ? SendSpeedBps : 0);
+        public string ReceiveSpeedText => FormatRate(HasNetworkSpeedSample ? ReceiveSpeedBps : 0);
+        public string NetworkSpeedText => $"↑ {SendSpeedText}   ↓ {ReceiveSpeedText} ";
+
+        internal static string FormatRate(ulong bytesPerSecond)
+        {
+            string[] units = { "B/s", "KiB/s", "MiB/s", "GiB/s" };
+            double value = bytesPerSecond;
+            int unit = 0;
+            while (value >= 1024 && unit < units.Length - 1) { value /= 1024; unit++; }
+            return unit == 0
+                ? $"{bytesPerSecond.ToString(CultureInfo.InvariantCulture)} {units[unit]}"
+                : $"{value:0.##} {units[unit]}";
+        }
+
         public string IpAddressDisplay => (IpAddresses != null && IpAddresses.Count > 0)
             ? IpAddresses.FirstOrDefault(ip => ip.Contains(".") && !ip.Contains(":")) ?? IpAddresses[0]
             : "---";

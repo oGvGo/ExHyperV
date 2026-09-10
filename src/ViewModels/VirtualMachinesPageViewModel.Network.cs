@@ -107,6 +107,9 @@ namespace ExHyperV.ViewModels
                     existingItem.SwitchName = newItem.SwitchName;
                     existingItem.MacAddress = newItem.MacAddress;
                     existingItem.IsStaticMac = newItem.IsStaticMac;
+                    existingItem.SendSpeedBps = newItem.SendSpeedBps;
+                    existingItem.ReceiveSpeedBps = newItem.ReceiveSpeedBps;
+                    existingItem.HasNetworkSpeedSample = newItem.HasNetworkSpeedSample;
 
                     if (newItem.IpAddresses != null && newItem.IpAddresses.Count > 0)
                     {

@@ -541,9 +541,6 @@
                             </StackPanel>
                         </StackPanel>
 
-                        <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                        </StackPanel>
-
                         <ui:Button Grid.Column="4" Appearance="Transparent" Padding="8,4" Command="{Binding DataContext.GoToNetworkSettingsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}">
                             <ui:SymbolIcon Symbol="Settings24" FontSize="18" Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}"/>
                         </ui:Button>
@@ -555,7 +552,7 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Border Margin="0,0,0,6" CornerRadius="4" BorderThickness="1" BorderBrush="#1A888888" Background="#05FFFFFF">
-                                    <Grid Margin="12,8">
+                                    <Grid Margin="12,10">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
@@ -563,10 +560,10 @@
 
                                         <ui:FontIcon Grid.Column="0" 
                                                      FontFamily="{DynamicResource SegoeFluentIcons}"
-                                                     FontSize="24" 
+                                                     FontSize="28" 
                                                      Glyph="&#xE839;"
                                                      VerticalAlignment="Center" 
-                                                     Margin="0,0,12,0">
+                                                     Margin="0,0,16,0">
                                             <ui:FontIcon.Style>
                                                 <Style TargetType="ui:FontIcon">
                                                     <Setter Property="Foreground" Value="{ui:ThemeResource TextFillColorPrimaryBrush}"/>
@@ -582,32 +579,48 @@
 
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                             <Grid>
-                                                <StackPanel Orientation="Horizontal">
-                                                    <TextBlock Text="{Binding IpAddressDisplay, FallbackValue={x:Static properties:Resources.VmDashboard_TabBoot}}" 
-                                                               FontSize="14" 
-                                                               FontWeight="SemiBold"
-                                                               Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}"/>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0"
+                                                           Text="{Binding IpAddressDisplay, FallbackValue={x:Static properties:Resources.VmDashboard_TabBoot}}"
+                                                           FontSize="14"
+                                                           FontWeight="SemiBold"
+                                                           TextTrimming="CharacterEllipsis"
+                                                           VerticalAlignment="Center"
+                                                           Margin="0,0,12,0"
+                                                           Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}"/>
+
+                                                <StackPanel Grid.Column="1"
+                                                            Orientation="Horizontal"
+                                                            HorizontalAlignment="Right"
+                                                            VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding NetworkSpeedText}"
+                                                               FontSize="11"
+                                                               Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}"
+                                                               Opacity="0.8"
+                                                               Margin="0,0,12,0"
+                                                               VerticalAlignment="Center"
+                                                               FontFamily="Segoe UI, Microsoft YaHei"/>
+                                                    <Border Background="{ui:ThemeResource ControlFillColorTertiaryBrush}"
+                                                            BorderBrush="{ui:ThemeResource CardStrokeColorDefaultBrush}"
+                                                            BorderThickness="1"
+                                                            CornerRadius="3"
+                                                            Padding="5,1">
+                                                        <TextBlock Text="{Binding SwitchName, FallbackValue='{x:Static properties:Resources.Status_Unconnected}'}"
+                                                                   FontSize="12"
+                                                                   Opacity="0.8"
+                                                                   FontWeight="Medium"
+                                                                   Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}"/>
+                                                    </Border>
                                                 </StackPanel>
-
-                                                <TextBlock Text="{Binding NetworkSpeedText}" 
-                                                           FontSize="11" 
-                                                           Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}"
-                                                           HorizontalAlignment="Right"
-                                                           VerticalAlignment="Center"/>
                                             </Grid>
-
-                                            <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
-                                                <TextBlock Text="{Binding Name}" FontSize="12" Opacity="0.8" Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}"/>
-                                                <TextBlock Text=" - " FontSize="12" Opacity="0.5" Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}"/>
-                                                <Border Background="#15FFFFFF" CornerRadius="3" Padding="4,0" VerticalAlignment="Center">
-                                                    <TextBlock Text="{Binding SwitchName, FallbackValue='{x:Static properties:Resources.Status_Unconnected}'}" FontSize="11" />
-                                                </Border>
-                                            </StackPanel>
 
                                             <TextBlock Text="{Binding MacAddress}" 
                                                        FontSize="10" 
                                                        
-                                                       Margin="0,2,0,0"
+                                                       Margin="0,4,0,0"
                                                        Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}"/>
                                         </StackPanel>
                                     </Grid>

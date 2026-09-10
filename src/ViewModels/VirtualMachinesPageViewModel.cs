@@ -97,6 +97,7 @@ namespace ExHyperV.ViewModels
         {
             _monitoringCts?.Cancel();
             _cpuService?.Dispose();
+            _queryService.Dispose();
             _uiTimer?.Stop();
             _ = DisposeVmImportSessionAsync();
             // 不在此 Dispose 嗅探单例(全进程共用,退出时由其 ProcessExit 钩子清理)
@@ -766,6 +767,7 @@ namespace ExHyperV.ViewModels
                 try
                 {
                     var updates = await _queryService.GetVmListAsync();
+                    await _queryService.UpdateNetworkPerformanceAsync(updates);
                     var memoryMap = await _queryService.GetVmRuntimeMemoryDataAsync();
 
                     await _queryService.UpdateDiskPerformanceAsync(VmList.Select(v => v.Model));

@@ -28,6 +28,11 @@ namespace ExHyperV.Services
         private static readonly ConcurrentDictionary<Guid, List<int>> _vmProcessIdCache = new();
         private static DateTime _processIdCacheTimestamp = DateTime.MinValue;
         private List<PerformanceCounter> _gpuCounters = new();
+        private const string NetworkPerfCategory = "Hyper-V Virtual Network Adapter";
+        private const string NetworkSentCounter = "Bytes Sent/sec";
+        private const string NetworkReceivedCounter = "Bytes Received/sec";
+        private readonly List<NetworkCounterSet> _networkCounters = new();
+        private string _networkCounterSignature = string.Empty;
         private static readonly Regex GpuInstanceRegex = new Regex(@"pid_(\d+).*engtype_([a-zA-Z0-9]+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         private const string QuerySummary = "SELECT Name, ElementName, EnabledState, UpTime, NumberOfProcessors, MemoryUsage, Notes FROM Msvm_SummaryInformation";
@@ -51,6 +56,26 @@ namespace ExHyperV.Services
         private sealed record GuestNetItem(string InstanceID, string[] IPAddresses);
         private sealed record PerfItem(string WmiName, ulong Read, ulong Write);
         private sealed record MemRuntimeItem(string Id, VmDynamicMemoryData Data);
+
+        private sealed class NetworkCounterSet : IDisposable
+        {
+            public string AdapterId { get; }
+            public PerformanceCounter Sent { get; }
+            public PerformanceCounter Received { get; }
+
+            public NetworkCounterSet(string adapterId, string instanceName)
+            {
+                AdapterId = adapterId;
+                Sent = new PerformanceCounter(NetworkPerfCategory, NetworkSentCounter, instanceName, true);
+                Received = new PerformanceCounter(NetworkPerfCategory, NetworkReceivedCounter, instanceName, true);
+            }
+
+            public void Dispose()
+            {
+                Sent.Dispose();
+                Received.Dispose();
+            }
+        }
 
         public async Task<List<VmInstance>> GetVmListAsync()
         {
@@ -485,6 +510,93 @@ namespace ExHyperV.Services
             catch { }
 
             return results;
+        }
+
+        public Task UpdateNetworkPerformanceAsync(IEnumerable<VmInstance> vms)
+        {
+            var adapters = vms.SelectMany(vm => vm.NetworkAdapters).ToList();
+            foreach (var adapter in adapters) adapter.HasNetworkSpeedSample = false;
+
+            try
+            {
+                var category = new PerformanceCounterCategory(NetworkPerfCategory);
+                var instances = category.GetInstanceNames();
+                var bindings = adapters
+                    .Select(adapter => (AdapterId: adapter.Id, InstanceName: FindNetworkCounterInstance(adapter.Id, instances)))
+                    .ToList();
+                var signature = string.Join("\n", bindings
+                    .OrderBy(x => x.AdapterId, StringComparer.OrdinalIgnoreCase)
+                    .Select(x => $"{x.AdapterId}={x.InstanceName ?? string.Empty}"));
+
+                if (!string.Equals(_networkCounterSignature, signature, StringComparison.Ordinal))
+                {
+                    RebuildNetworkCounters(bindings);
+                    _networkCounterSignature = signature;
+                    return Task.CompletedTask;
+                }
+
+                foreach (var counter in _networkCounters.ToList())
+                {
+                    var adapter = adapters.FirstOrDefault(x => x.Id.Equals(counter.AdapterId, StringComparison.OrdinalIgnoreCase));
+                    if (adapter == null) continue;
+                    try
+                    {
+                        float sent = counter.Sent.NextValue();
+                        float received = counter.Received.NextValue();
+                        if (!float.IsFinite(sent) || !float.IsFinite(received) || sent < 0 || received < 0) continue;
+                        adapter.SendSpeedBps = (ulong)sent;
+                        adapter.ReceiveSpeedBps = (ulong)received;
+                        adapter.HasNetworkSpeedSample = true;
+                    }
+                    catch
+                    {
+                        _networkCounters.Remove(counter);
+                        counter.Dispose();
+                        _networkCounterSignature = string.Empty;
+                    }
+                }
+            }
+            catch { _networkCounterSignature = string.Empty; }
+            return Task.CompletedTask;
+        }
+
+        private static string? FindNetworkCounterInstance(string adapterId, IEnumerable<string> instances)
+        {
+            var ids = Regex.Matches(adapterId, @"[0-9A-Fa-f]{8}-(?:[0-9A-Fa-f]{4}-){3}[0-9A-Fa-f]{12}")
+                .Select(m => m.Value).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+            // InstanceID 的第一个 GUID 是 VM，后续 GUID 才是网卡；只用网卡 GUID，避免同 VM 多网卡串号。
+            if (ids.Count > 1) ids = ids.Skip(1).ToList();
+            var matches = instances
+                .Where(instance => ids.Any(id => instance.Contains(id, StringComparison.OrdinalIgnoreCase)))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+            return matches.Count == 1 ? matches[0] : null;
+        }
+
+        private void RebuildNetworkCounters(IEnumerable<(string AdapterId, string? InstanceName)> bindings)
+        {
+            foreach (var counter in _networkCounters) counter.Dispose();
+            _networkCounters.Clear();
+            foreach (var binding in bindings.Where(x => !string.IsNullOrEmpty(x.InstanceName)))
+            {
+                try
+                {
+                    var counter = new NetworkCounterSet(binding.AdapterId, binding.InstanceName!);
+                    // 与 GPU 采集一致：速率型 PerformanceCounter 的首次值只用于预热。
+                    counter.Sent.NextValue();
+                    counter.Received.NextValue();
+                    _networkCounters.Add(counter);
+                }
+                catch { }
+            }
+        }
+
+        public void Dispose()
+        {
+            foreach (var counter in _gpuCounters) counter.Dispose();
+            _gpuCounters.Clear();
+            foreach (var counter in _networkCounters) counter.Dispose();
+            _networkCounters.Clear();
         }
 
         public async Task<Dictionary<string, VmDynamicMemoryData>> GetVmRuntimeMemoryDataAsync()
