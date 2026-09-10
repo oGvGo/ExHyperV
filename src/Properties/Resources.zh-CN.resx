@@ -3578,7 +3578,7 @@
     <value>、</value>
   </data>
   <data name="PCIePage_ClassWithChildTypes" xml:space="preserve">
-    <value>{0}（子设备：{1}）</value>
+    <value>{0}（包含：{1}）</value>
   </data>
   <data name="VmAdvanced_FullScsiTitle" xml:space="preserve">
     <value>完整 SCSI 命令集</value>
@@ -3836,16 +3836,16 @@
     <value>打包</value>
   </data>
   <data name="VmExport_CreatePackage" xml:space="preserve">
-    <value>打包导出</value>
+    <value>打包选项</value>
   </data>
   <data name="VmExport_CreatePackageDescription" xml:space="preserve">
     <value>将导出内容保存为单个 ZIP 文件</value>
   </data>
   <data name="VmExport_PackageStore" xml:space="preserve">
-    <value>仅存储</value>
+    <value>存储（快）</value>
   </data>
   <data name="VmExport_PackageCompress" xml:space="preserve">
-    <value>压缩</value>
+    <value>压缩（慢）</value>
   </data>
   <data name="VmExport_PackageProgress" xml:space="preserve">
     <value>正在打包… {0}%</value>

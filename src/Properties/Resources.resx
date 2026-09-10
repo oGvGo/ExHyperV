@@ -3578,7 +3578,7 @@ Remove them from storage and retry? Cancel to re-plug the device and try again.<
     <value>, </value>
   </data>
   <data name="PCIePage_ClassWithChildTypes" xml:space="preserve">
-    <value>{0} (child devices: {1})</value>
+    <value>{0} (contains: {1})</value>
   </data>
   <data name="VmAdvanced_FullScsiTitle" xml:space="preserve">
     <value>Full SCSI command set</value>
@@ -3836,16 +3836,16 @@ Remove them from storage and retry? Cancel to re-plug the device and try again.<
     <value>Packaging</value>
   </data>
   <data name="VmExport_CreatePackage" xml:space="preserve">
-    <value>Package Export</value>
+    <value>Package Options</value>
   </data>
   <data name="VmExport_CreatePackageDescription" xml:space="preserve">
     <value>Save the exported contents as a single ZIP file</value>
   </data>
   <data name="VmExport_PackageStore" xml:space="preserve">
-    <value>Store</value>
+    <value>Store (Fast)</value>
   </data>
   <data name="VmExport_PackageCompress" xml:space="preserve">
-    <value>Compress</value>
+    <value>Compress (Slow)</value>
   </data>
   <data name="VmExport_PackageProgress" xml:space="preserve">
     <value>Packaging… {0}%</value>

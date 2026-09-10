@@ -73,23 +73,6 @@
                     </ScrollViewer>
                 </Border>
 
-                <TextBlock Text="{x:Static properties:Resources.VmExport_Destination}" FontSize="14"
-                           Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}" Margin="0,0,0,12"/>
-                <Border Background="{ui:ThemeResource CardBackgroundFillColorDefaultBrush}"
-                        BorderBrush="{ui:ThemeResource CardStrokeColorDefaultBrush}"
-                        BorderThickness="1" CornerRadius="8" Margin="0,0,0,32">
-                    <Grid Margin="24,16" IsEnabled="{Binding CanConfigureExport}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBox Text="{Binding ExportDestinationPath, Mode=OneWay}" IsReadOnly="True"
-                                 MinHeight="36" VerticalContentAlignment="Center" Margin="0,0,12,0"/>
-                        <ui:Button Grid.Column="1" Content="{x:Static properties:Resources.Button_Browse}"
-                                   Command="{Binding BrowseExportFolderCommand}" MinWidth="92"/>
-                    </Grid>
-                </Border>
-
                 <TextBlock Text="{x:Static properties:Resources.VmExport_Content}" FontSize="14"
                            Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}" Margin="0,0,0,12"/>
                 <Border Background="{ui:ThemeResource CardBackgroundFillColorDefaultBrush}"
@@ -412,7 +395,6 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
                         <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
@@ -423,119 +405,136 @@
                                        Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"/>
                         </StackPanel>
 
-                        <Border Grid.Column="1" Width="180" Height="36" CornerRadius="8"
-                                Margin="0,0,16,0" BorderThickness="1"
-                                Background="{ui:ThemeResource ControlFillColorDefaultBrush}"
-                                BorderBrush="{ui:ThemeResource CardStrokeColorDefaultBrush}"
-                                Visibility="{Binding ShowExportPackageOptions, Converter={StaticResource BoolToVis}}">
-                            <Border.Resources>
-                                <Style x:Key="ExportPackageSegmentButton" TargetType="Button">
-                                    <Setter Property="BorderThickness" Value="0"/>
-                                    <Setter Property="Background" Value="Transparent"/>
-                                    <Setter Property="Padding" Value="0"/>
-                                    <Setter Property="MinWidth" Value="88"/>
-                                    <Setter Property="Height" Value="32"/>
-                                    <Setter Property="Cursor" Value="Hand"/>
-                                    <Setter Property="FontSize" Value="13"/>
-                                    <Setter Property="FontWeight" Value="SemiBold"/>
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border Background="Transparent" CornerRadius="6">
-                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                </Border>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </Border.Resources>
-                            <Grid>
-                                <Border Width="86" Height="30" HorizontalAlignment="Left" VerticalAlignment="Center"
-                                        Margin="3,0,0,0" CornerRadius="6"
-                                        Background="{DynamicResource AccentFillColorDefaultBrush}">
-                                    <Border.RenderTransform>
-                                        <TranslateTransform X="0"/>
-                                    </Border.RenderTransform>
-                                    <Border.Style>
-                                        <Style TargetType="Border">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsCompressedExportPackage}" Value="True">
-                                                    <DataTrigger.EnterActions>
-                                                        <BeginStoryboard>
-                                                            <Storyboard>
-                                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
-                                                                                 To="88" Duration="0:0:0.18">
-                                                                    <DoubleAnimation.EasingFunction>
-                                                                        <CubicEase EasingMode="EaseOut"/>
-                                                                    </DoubleAnimation.EasingFunction>
-                                                                </DoubleAnimation>
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </DataTrigger.EnterActions>
-                                                    <DataTrigger.ExitActions>
-                                                        <BeginStoryboard>
-                                                            <Storyboard>
-                                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
-                                                                                 To="0" Duration="0:0:0.18">
-                                                                    <DoubleAnimation.EasingFunction>
-                                                                        <CubicEase EasingMode="EaseOut"/>
-                                                                    </DoubleAnimation.EasingFunction>
-                                                                </DoubleAnimation>
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </DataTrigger.ExitActions>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Border.Style>
-                                </Border>
-                                <UniformGrid Columns="2">
-                                    <Button Content="{x:Static properties:Resources.VmExport_PackageStore}"
-                                            Command="{Binding SelectStoredExportPackageCommand}">
-                                        <Button.Style>
-                                            <Style TargetType="Button" BasedOn="{StaticResource ExportPackageSegmentButton}">
-                                                <Setter Property="Foreground" Value="White"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsCompressedExportPackage}" Value="True">
-                                                        <Setter Property="Foreground" Value="{ui:ThemeResource TextFillColorSecondaryBrush}"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Button.Style>
-                                    </Button>
-                                    <Button Content="{x:Static properties:Resources.VmExport_PackageCompress}"
-                                            Command="{Binding SelectCompressedExportPackageCommand}">
-                                        <Button.Style>
-                                            <Style TargetType="Button" BasedOn="{StaticResource ExportPackageSegmentButton}">
-                                                <Setter Property="Foreground" Value="{ui:ThemeResource TextFillColorSecondaryBrush}"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsCompressedExportPackage}" Value="True">
-                                                        <Setter Property="Foreground" Value="White"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Button.Style>
-                                    </Button>
-                                </UniformGrid>
-                            </Grid>
-                        </Border>
-
-                        <ui:ToggleSwitch Grid.Column="2" VerticalAlignment="Center"
+                        <ui:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
                                          IsChecked="{Binding ExportCreatesPackage, Mode=TwoWay}"/>
 
-                        <Grid Grid.Row="1" Grid.ColumnSpan="3" Margin="0,14,0,0"
+                        <Grid Grid.Row="1" Grid.ColumnSpan="2" Margin="0,14,0,0"
                               Visibility="{Binding ShowExportPackageOptions, Converter={StaticResource BoolToVis}}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="{x:Static properties:Resources.VmExport_PackageFileName}"
                                        Margin="0,0,16,0" VerticalAlignment="Center"
                                        Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}"/>
                             <ui:TextBox Grid.Column="1" MinHeight="36"
+                                        Margin="0,0,16,0"
                                         Text="{Binding ExportPackageFileName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <Border Grid.Column="2" Width="180" Height="36" CornerRadius="8"
+                                    BorderThickness="1"
+                                    Background="{ui:ThemeResource ControlFillColorDefaultBrush}"
+                                    BorderBrush="{ui:ThemeResource CardStrokeColorDefaultBrush}">
+                                <Border.Resources>
+                                    <Style x:Key="ExportPackageSegmentButton" TargetType="Button">
+                                        <Setter Property="BorderThickness" Value="0"/>
+                                        <Setter Property="Background" Value="Transparent"/>
+                                        <Setter Property="Padding" Value="0"/>
+                                        <Setter Property="MinWidth" Value="88"/>
+                                        <Setter Property="Height" Value="32"/>
+                                        <Setter Property="Cursor" Value="Hand"/>
+                                        <Setter Property="FontSize" Value="13"/>
+                                        <Setter Property="FontWeight" Value="SemiBold"/>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border Background="Transparent" CornerRadius="6">
+                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </Border.Resources>
+                                <Grid>
+                                    <Border Width="86" Height="30" HorizontalAlignment="Left" VerticalAlignment="Center"
+                                            Margin="3,0,0,0" CornerRadius="6"
+                                            Background="{DynamicResource AccentFillColorDefaultBrush}">
+                                        <Border.RenderTransform>
+                                            <TranslateTransform X="0"/>
+                                        </Border.RenderTransform>
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsCompressedExportPackage}" Value="True">
+                                                        <DataTrigger.EnterActions>
+                                                            <BeginStoryboard>
+                                                                <Storyboard>
+                                                                    <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                                                                                     To="88" Duration="0:0:0.18">
+                                                                        <DoubleAnimation.EasingFunction>
+                                                                            <CubicEase EasingMode="EaseOut"/>
+                                                                        </DoubleAnimation.EasingFunction>
+                                                                    </DoubleAnimation>
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </DataTrigger.EnterActions>
+                                                        <DataTrigger.ExitActions>
+                                                            <BeginStoryboard>
+                                                                <Storyboard>
+                                                                    <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                                                                                     To="0" Duration="0:0:0.18">
+                                                                        <DoubleAnimation.EasingFunction>
+                                                                            <CubicEase EasingMode="EaseOut"/>
+                                                                        </DoubleAnimation.EasingFunction>
+                                                                    </DoubleAnimation>
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </DataTrigger.ExitActions>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                    </Border>
+                                    <UniformGrid Columns="2">
+                                        <Button Content="{x:Static properties:Resources.VmExport_PackageStore}"
+                                                Command="{Binding SelectStoredExportPackageCommand}">
+                                            <Button.Style>
+                                                <Style TargetType="Button" BasedOn="{StaticResource ExportPackageSegmentButton}">
+                                                    <Setter Property="Foreground" Value="White"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsCompressedExportPackage}" Value="True">
+                                                            <Setter Property="Foreground" Value="{ui:ThemeResource TextFillColorSecondaryBrush}"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
+                                        <Button Content="{x:Static properties:Resources.VmExport_PackageCompress}"
+                                                Command="{Binding SelectCompressedExportPackageCommand}">
+                                            <Button.Style>
+                                                <Style TargetType="Button" BasedOn="{StaticResource ExportPackageSegmentButton}">
+                                                    <Setter Property="Foreground" Value="{ui:ThemeResource TextFillColorSecondaryBrush}"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsCompressedExportPackage}" Value="True">
+                                                            <Setter Property="Foreground" Value="White"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
+                                    </UniformGrid>
+                                </Grid>
+                            </Border>
                         </Grid>
 
+                    </Grid>
+                </Border>
+
+                <TextBlock Text="{x:Static properties:Resources.VmExport_Destination}" FontSize="14"
+                           Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}" Margin="0,12,0,12"/>
+                <Border Background="{ui:ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ui:ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1" CornerRadius="8" Margin="0,0,0,32">
+                    <Grid Margin="24,16" IsEnabled="{Binding CanConfigureExport}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Text="{Binding ExportDestinationPath, Mode=OneWay}" IsReadOnly="True"
+                                 MinHeight="36" VerticalContentAlignment="Center" Margin="0,0,12,0"/>
+                        <ui:Button Grid.Column="1" Content="{x:Static properties:Resources.Button_Browse}"
+                                   Command="{Binding BrowseExportFolderCommand}" MinWidth="92"/>
                     </Grid>
                 </Border>
 

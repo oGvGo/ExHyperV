@@ -129,7 +129,7 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <Border Grid.Column="0" Width="6" Height="6" CornerRadius="2" VerticalAlignment="Center" Margin="0,0,8,0">
+                    <Border Grid.Column="0" Width="6" Height="6" CornerRadius="3" VerticalAlignment="Center" Margin="6,0,8,0">
                         <Border.Style>
                             <Style TargetType="Border">
                                 <Setter Property="Background" Value="{ui:ThemeResource TextFillColorTertiaryBrush}"/>
